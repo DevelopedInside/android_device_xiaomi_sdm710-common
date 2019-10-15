@@ -542,6 +542,7 @@ service qcom-c_core-sh  /vendor/bin/init.qcom.class_core.sh
 service qcom-c_main-sh /vendor/bin/init.class_main.sh
     class main
     user root
+    group root system
     oneshot
 
 #xiaomi bsp-wifi: start vendor.cnss_diag is added by bsp-wifi
@@ -971,7 +972,9 @@ service profiler_daemon /system/bin/profiler_daemon
 
 service charger /system/bin/charger
     class charger
-    group system graphics
+    user system
+    group system graphics input
+    capabilities SYS_BOOT
     seclabel u:r:charger:s0
 
 service vendor.ssr_diag /system/vendor/bin/ssr_diag
