@@ -379,6 +379,12 @@ PRODUCT_PACKAGES += \
     libstdc++.vendor \
     vndk-sp
 
+# VR
+PRODUCT_PACKAGES += \
+    android.hardware.vr@1.0-impl \
+    android.hardware.vr@1.0-service \
+    vr.sdm710
+
 # WiFi
 PRODUCT_PACKAGES += \
     android.hardware.wifi@1.0-service \
