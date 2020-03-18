@@ -1,0 +1,66 @@
+    write /sys/class/devfreq/soc:qcom,l3-cpu6/mem_latency/ratio_ceil 4000
+
+    write /sys/class/devfreq/soc:qcom,mincpubw/governor "compute"
+    write /sys/class/devfreq/soc:qcom,mincpubw/polling_interval 10
+
+    # Set cpuset parameters
+    write /dev/cpuset/background/cpus 0-1
+    write /dev/cpuset/system-background/cpus 0-2
+    write /dev/cpuset/foreground/boost/cpus 4-7
+    write /dev/cpuset/foreground/cpus 0-2,4-7
+    write /dev/cpuset/top-app/cpus 0-7
+
+    # Turn off scheduler boost at the end
+    write /proc/sys/kernel/sched_boost 0
+
+    # Disable CPU Retention
+    write /sys/module/lpm_levels/L3/cpu0/ret/idle_enabled "N"
+    write /sys/module/lpm_levels/L3/cpu1/ret/idle_enabled "N"
+    write /sys/module/lpm_levels/L3/cpu2/ret/idle_enabled "N"
+    write /sys/module/lpm_levels/L3/cpu3/ret/idle_enabled "N"
+    write /sys/module/lpm_levels/L3/cpu4/ret/idle_enabled "N"
+    write /sys/module/lpm_levels/L3/cpu5/ret/idle_enabled "N"
+    write /sys/module/lpm_levels/L3/cpu6/ret/idle_enabled "N"
+    write /sys/module/lpm_levels/L3/cpu7/ret/idle_enabled "N"
+    write /sys/module/lpm_levels/L3/l3-dyn-ret/idle_enabled "N"
+
+    # Turn on sleep modes
+    write /sys/module/lpm_levels/parameters/sleep_disabled 0
+
+    write /proc/sys/vm/swappiness 100
+    write /proc/sys/vm/watermark_scale_factor 120
+
+    # Set LMK minfree
+    write /sys/module/lowmemorykiller/parameters/minfree "18432,23040,27648,32256,85296,120640"
+
+    # Post-setup services
+    setprop vendor.post_boot.parsed 1
+
+on property:sys.boot_completed=1
+    trigger enable-low-power
+
+on property:init.svc.recovery=running
+    trigger enable-low-power
+
+service vendor.charger /system/bin/chargeonlymode
+    class charger
+    user system
+    group system graphics input
+    capabilities SYS_BOOT
+    seclabel u:r:charger:s0
+
+service vendor.hvdcp_opti /vendor/bin/hvdcp_opti
+    class main
+    user root
+    group system wakelock
+
+service vendor.power_off_alarm /vendor/bin/power_off_alarm
+    class core
+    group system
+    disabled
+    oneshot
+
+service vendor.poweroffm64 /vendor/bin/poweroffm64
+    class late_start
+    oneshot
+    seclabel u:r:poweroffm64:s0
