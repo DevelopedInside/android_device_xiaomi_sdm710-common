@@ -42,8 +42,6 @@ soc_id=`cat /sys/devices/soc0/soc_id 2> /dev/null`
 esoc_name=`cat /sys/bus/esoc/devices/esoc0/esoc_name 2> /dev/null`
 
 target=`getprop ro.board.platform`
-product=`getprop ro.product.name`
-product=${product:(-4)}
 
 if [ -f /sys/class/android_usb/f_mass_storage/lun/nofua ]; then
 	echo 1  > /sys/class/android_usb/f_mass_storage/lun/nofua
@@ -78,11 +76,7 @@ if [ "$(getprop persist.vendor.usb.config)" == "" -a \
                   *)
 		  case "$soc_machine" in
 		    "SA")
-			if [ "$product" == "gvmq" ]; then
-				setprop persist.vendor.usb.config adb
-			else
-				setprop persist.vendor.usb.config diag,adb
-			fi
+	              setprop persist.vendor.usb.config diag,adb
 		    ;;
 		    *)
 	            case "$target" in
